@@ -2,3 +2,6 @@ header
     h1 
        | Osu Playtime
 main
+    - @user_list_with_data.each do |line|
+        p 
+            a href="update/#{line["user_name"]}" #{line["user_name"]}, #{line["date_time"]}, #{line["playtime"]}
