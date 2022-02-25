@@ -7,7 +7,7 @@ database.results_as_hash = true
 pt = Playtime.new
 # exempel: pt.getdb("cheesemax", "", database)
 get '/' do
-    @user_list_with_data = database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.user_id asc")
+    @user_list_with_data = database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc")
     slim(:index)
 end
 get '/update/:username' do
@@ -17,4 +17,16 @@ get '/update/:username' do
         pt.getdb(params[:username], "", database)
         redirect '/'
     end
+end
+get '/combine' do
+    @user_list_with_data = database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc")
+    puts pt.combinename(@user_list_with_data).to_s
+end
+get '/extrapolate' do
+    extrapolated_user_data = {}
+    @user_list_with_data = database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc")
+    pt.combinename(@user_list_with_data).each do |user_name, data|
+        extrapolated_user_data[user_name] = pt.extrapolate(data)
+    end
+    extrapolated_user_data.to_s
 end

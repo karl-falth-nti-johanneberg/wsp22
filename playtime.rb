@@ -53,6 +53,31 @@ class Playtime
         user_id = db.execute("select user_id from users where osu_id = ?", osu_id).first["user_id"]
         db.execute("insert into playtime_records (user_id, date_time, playtime) values (? ,? ,?)", user_id, date_time, playtime)
     end
+    def combinename(user_list_with_data)
+        output = {}
+        user_list_with_data.each_with_index do |data, i|
+            if output[data["user_name"]] == nil
+                output[data["user_name"]] = [[data["date_time"], data["playtime"]]]
+            elsif output[data["user_name"]]
+                output[data["user_name"]].append([data["date_time"], data["playtime"]])
+            end
+        end
+        return output
+    end
+    def extrapolate(data)
+        # output ska innehålla: skillnad i speltid mellan två datapunkter / skillnad i faktisk tid mellan två datapunkter.
+        #                       senaste veckans speltid.
+        #                       speltid per dag i snitt.
+        output = {"percent" => nil, "last_week" => nil, "average_day" => nil}
+        # skillnad i speltid mellan tidigaste och senaste datapunkten / skillnad i faktisk tid mellan tidigaste och senaste datapunkten.
+        date_time_first = data[0][0].split(/[ \/:]/)
+        date_time_last  = data[-1][0].split(/[ \/:]/)
+        time_difference = Time.new(date_time_last[0],date_time_last[1],date_time_last[2],date_time_last[3],date_time_last[4],date_time_last[5]).to_i - Time.new(date_time_first[0], date_time_first[1], date_time_first[2], date_time_first[3], date_time_first[4], date_time_first[5]).to_i
+        playtime_difference = data[-1][1] - data[0][1]
+        output["percent"] = ((playtime_difference.to_f / time_difference.to_f)*100)
+
+        return output
+    end
 end
 # print "client id:"
 # client_id = gets.chomp.to_i
