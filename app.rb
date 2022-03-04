@@ -1,6 +1,7 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require_relative 'playtime.rb'
+require_relative 'database'
 
 database = SQLite3::Database.new "db/playtime.db"
 database.results_as_hash = true
@@ -20,7 +21,7 @@ get '/update/:username' do
 end
 get '/combine' do
     @user_list_with_data = database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc")
-    puts pt.combinename(@user_list_with_data).to_s
+    return pt.combinename(@user_list_with_data).to_s
 end
 get '/extrapolate' do
     extrapolated_user_data = {}

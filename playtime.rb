@@ -71,33 +71,34 @@ class Playtime
         output = {"percent" => nil, "last_week" => nil, "average_day" => nil}
 
         # skillnad i speltid mellan tidigaste och senaste datapunkten / skillnad i faktisk tid mellan tidigaste och senaste datapunkten.
-        date_time_first = data[0][0].split(/[ \/:]/)
-        date_time_last  = data[-1][0].split(/[ \/:]/)
-        time_difference = Time.new(date_time_last[0],date_time_last[1],date_time_last[2],date_time_last[3],date_time_last[4],date_time_last[5]).to_i - Time.new(date_time_first[0], date_time_first[1], date_time_first[2], date_time_first[3], date_time_first[4], date_time_first[5]).to_i
+        # vill ha funktionalitet för att själv kunna välja vilka datapunkter som ska användas.
+        date_time_first = data[0][0]
+        date_time_last  = data[-1][0]
+        time_difference = DateTime.parse(date_time_last).to_time.to_i - DateTime.parse(date_time_first).to_time.to_i
         playtime_difference = data[-1][1] - data[0][1]
         output["percent"] = ((playtime_difference.to_f / time_difference.to_f)*100)
 
         # senaste veckans speltid.
-        puts date_time_last, time_difference
         date_time_week = date_time_last
         i = -1
         if time_difference < 604800
             i = 0
-            date_time_week = data[i]
+            date_time_week = data[i][0]
         else
-            until Time.new(date_time_last[0], date_time_last[1], date_time_last[2], date_time_last[3], date_time_last[4], date_time_last[5]).to_i - Time.new(date_time_week[0], date_time_week[1], date_time_week[2], date_time_week[3], date_time_week[4], date_time_week[5]).to_i >= 604800
+            until DateTime.parse(date_time_last).to_time.to_i - DateTime.parse(date_time_week).to_time.to_i > 604800
                 i += -1
-                date_time_week = data[i]
+                date_time_week = data[i][0]
             end
         end
         playtime_last = data[-1][1]
         playtime_week = data[i][1]
-        time_difference = Time.new(date_time_last[0],date_time_last[1],date_time_last[2],date_time_last[3],date_time_last[4],date_time_last[5]).to_i - Time.new(date_time_week[0], date_time_week[1], date_time_week[2], date_time_week[3], date_time_week[4], date_time_week[5]).to_i
-        week_factor = 604800 / time_difference
-        output["last_week"] = (playtime_last - playtime_week) * week_factor
+        time_difference = DateTime.parse(date_time_last).to_time.to_i - DateTime.parse(date_time_week).to_time.to_i
+        week_factor = 604800.0 / time_difference
+        puts week_factor, playtime_last, playtime_week, time_difference, date_time_week, date_time_last
+        output["last_week"] = (playtime_last - playtime_week) * week_factor / 3600
 
         # speltid per dag i snitt.
-        output["average_day"] = playtime_difference / ((Time.new(date_time_last[0],date_time_last[1],date_time_last[2],date_time_last[3],date_time_last[4],date_time_last[5]).to_i - Time.new(date_time_first[0], date_time_first[1], date_time_first[2], date_time_first[3], date_time_first[4], date_time_first[5]).to_i) / 86400)
+        output["average_day"] = playtime_difference / ((DateTime.parse(date_time_last).to_time.to_i - DateTime.parse(date_time_first).to_time.to_i) / 86400.0) / 3600
         return output
     end
 end
