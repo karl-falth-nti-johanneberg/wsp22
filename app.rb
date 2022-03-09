@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'sinatra/reloader'
 require_relative 'playtime.rb'
-require_relative 'database'
+# require_relative 'database'
 
 database = SQLite3::Database.new "db/playtime.db"
 database.results_as_hash = true

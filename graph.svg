@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="600 100 360 200">
+  <g id="scruffy_graph">
+    <g id="background" transform="translate(0.0, 0.0)">
+      <defs>
+        <linearGradient id="BackgroundGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="5%" stop-color="black"/>
+          <stop offset="95%" stop-color="#4A465A"/>
+        </linearGradient>
+      </defs>
+      <rect width="600.0" height="360.0" x="0" y="0" fill="url(#BackgroundGradient)"/>
+    </g>
+    <g id="title" transform="translate(30.0, 7.2)">
+    </g>
+    <g id="view" transform="translate(12.0, 93.60000000000001)">
+      <g>
+        <g id="values" transform="translate(0.0, 4.752000000000001)">
+          <text x="96.11999999999999" y="211.46400000000003" font-size="16.917120000000004" font-family="" fill="white" text-anchor="end">-2</text>
+          <text x="96.11999999999999" y="158.598" font-size="16.917120000000004" font-family="" fill="white" text-anchor="end">1</text>
+          <text x="96.11999999999999" y="105.73200000000001" font-size="16.917120000000004" font-family="" fill="white" text-anchor="end">4</text>
+          <text x="96.11999999999999" y="52.866000000000014" font-size="16.917120000000004" font-family="" fill="white" text-anchor="end">7</text>
+          <text x="96.11999999999999" y="0.0" font-size="16.917120000000004" font-family="" fill="white" text-anchor="end">10</text>
+        </g>
+        <g id="grid" transform="translate(106.80000000000001, 0.0)">
+          <line x1="0" y1="0.0" x2="427.20000000000005" y2="0.0" style="stroke: white; stroke-width: 2;"/>
+          <line x1="0" y1="52.86600000000001" x2="427.20000000000005" y2="52.86600000000001" style="stroke: white; stroke-width: 2;"/>
+          <line x1="0" y1="105.73200000000001" x2="427.20000000000005" y2="105.73200000000001" style="stroke: white; stroke-width: 2;"/>
+          <line x1="0" y1="158.598" x2="427.20000000000005" y2="158.598" style="stroke: white; stroke-width: 2;"/>
+          <line x1="0" y1="211.46400000000003" x2="427.20000000000005" y2="211.46400000000003" style="stroke: white; stroke-width: 2;"/>
+        </g>
+        <g id="labels" transform="translate(106.80000000000001, 218.59200000000004)">
+        </g>
+        <g id="graphs" transform="translate(106.80000000000001, 0.0)">
+          <g id="component_graphs_graph_0" class="graph_layer">
+            <g transform="translate(-1.0573200000000003, -1.0573200000000003)">
+              <rect x="1.9418181818181814" y="183.8817391304348" width="37.06736727272728" height="29.696900869565233" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+              <rect x="2.9991381818181817" y="188.11101913043478" width="37.06736727272728" height="26.52494086956523" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+            </g>
+            <rect x="1.9418181818181814" y="183.8817391304348" width="34.95272727272728" height="27.582260869565232" fill="#6886B4" style="opacity: 1.0; stroke: none;"/>
+            <g transform="translate(-1.0573200000000003, -1.0573200000000003)">
+              <rect x="40.77818181818182" y="165.49356521739134" width="37.06736727272728" height="48.08507478260869" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+              <rect x="41.83550181818182" y="169.72284521739132" width="37.06736727272728" height="44.913114782608694" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+            </g>
+            <rect x="40.77818181818182" y="165.49356521739134" width="34.95272727272728" height="45.97043478260869" fill="#6886B4" style="opacity: 1.0; stroke: none;"/>
+            <g transform="translate(-1.0573200000000003, -1.0573200000000003)">
+              <rect x="79.61454545454545" y="147.10539130434785" width="37.06736727272728" height="66.47324869565217" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+              <rect x="80.67186545454545" y="151.33467130434784" width="37.06736727272728" height="63.30128869565218" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+            </g>
+            <rect x="79.61454545454545" y="147.10539130434785" width="34.95272727272728" height="64.35860869565218" fill="#6886B4" style="opacity: 1.0; stroke: none;"/>
+            <g transform="translate(-1.0573200000000003, -1.0573200000000003)">
+              <rect x="118.4509090909091" y="128.71721739130436" width="37.06736727272728" height="84.86142260869566" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+              <rect x="119.5082290909091" y="132.94649739130435" width="37.06736727272728" height="81.68946260869566" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+            </g>
+            <rect x="118.4509090909091" y="128.71721739130436" width="34.95272727272728" height="82.74678260869567" fill="#6886B4" style="opacity: 1.0; stroke: none;"/>
+            <g transform="translate(-1.0573200000000003, -1.0573200000000003)">
+              <rect x="157.28727272727272" y="110.32904347826089" width="37.06736727272728" height="103.24959652173914" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+              <rect x="158.34459272727273" y="114.55832347826089" width="37.06736727272728" height="100.07763652173914" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+            </g>
+            <rect x="157.28727272727272" y="110.32904347826089" width="34.95272727272728" height="101.13495652173914" fill="#6886B4" style="opacity: 1.0; stroke: none;"/>
+            <g transform="translate(-1.0573200000000003, -1.0573200000000003)">
+              <rect x="196.1236363636364" y="91.94086956521741" width="37.06736727272728" height="121.63777043478261" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+              <rect x="197.1809563636364" y="96.17014956521741" width="37.06736727272728" height="118.46581043478261" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+            </g>
+            <rect x="196.1236363636364" y="91.94086956521741" width="34.95272727272728" height="119.52313043478262" fill="#6886B4" style="opacity: 1.0; stroke: none;"/>
+            <g transform="translate(-1.0573200000000003, -1.0573200000000003)">
+              <rect x="234.96" y="73.55269565217392" width="37.06736727272728" height="140.0259443478261" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+              <rect x="236.01732" y="77.78197565217393" width="37.06736727272728" height="136.8539843478261" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+            </g>
+            <rect x="234.96" y="73.55269565217392" width="34.95272727272728" height="137.9113043478261" fill="#6886B4" style="opacity: 1.0; stroke: none;"/>
+            <g transform="translate(-1.0573200000000003, -1.0573200000000003)">
+              <rect x="273.79636363636365" y="55.164521739130464" width="37.06736727272728" height="158.41411826086957" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+              <rect x="274.85368363636366" y="59.39380173913047" width="37.06736727272728" height="155.24215826086956" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+            </g>
+            <rect x="273.79636363636365" y="55.164521739130464" width="34.95272727272728" height="156.29947826086956" fill="#6886B4" style="opacity: 1.0; stroke: none;"/>
+            <g transform="translate(-1.0573200000000003, -1.0573200000000003)">
+              <rect x="312.63272727272727" y="36.77634782608695" width="37.06736727272728" height="176.8022921739131" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+              <rect x="313.69004727272727" y="41.00562782608695" width="37.06736727272728" height="173.63033217391308" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+            </g>
+            <rect x="312.63272727272727" y="36.77634782608695" width="34.95272727272728" height="174.68765217391308" fill="#6886B4" style="opacity: 1.0; stroke: none;"/>
+            <g transform="translate(-1.0573200000000003, -1.0573200000000003)">
+              <rect x="351.4690909090909" y="18.388173913043488" width="37.06736727272728" height="195.19046608695655" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+              <rect x="352.5264109090909" y="22.61745391304349" width="37.06736727272728" height="192.01850608695653" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+            </g>
+            <rect x="351.4690909090909" y="18.388173913043488" width="34.95272727272728" height="193.07582608695654" fill="#6886B4" style="opacity: 1.0; stroke: none;"/>
+            <g transform="translate(-1.0573200000000003, -1.0573200000000003)">
+              <rect x="390.30545454545455" y="0.0" width="37.06736727272728" height="213.57864000000004" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+              <rect x="391.36277454545456" y="4.229280000000001" width="37.06736727272728" height="210.40668000000002" style="fill: black; fill-opacity: 0.15; stroke: none;"/>
+            </g>
+            <rect x="390.30545454545455" y="0.0" width="34.95272727272728" height="211.46400000000003" fill="#6886B4" style="opacity: 1.0; stroke: none;"/>
+          </g>
+        </g>
+      </g>
+    </g>
+    <g id="legend" transform="translate(30.0, 46.800000000000004)">
+      <rect x="264.6" y="0" width="10.799999999999999" height="10.799999999999999" fill="#6886B4"/>
+      <text x="284.04" y="11.663999999999998" font-size="15.551999999999998" font-family="" style="color: white" fill="white"></text>
+    </g>
+  </g>
+</svg>
