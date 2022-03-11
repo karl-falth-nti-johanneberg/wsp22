@@ -1,5 +1,5 @@
 require 'http'
-require 'sqlite3'
+require 'Scruffy'
 class Playtime
     @@client_id = 12307
     @@client_secret = "82Wwjem9FHYMKrxXDy39D4lg0vaJfKH9Hy25eOW5"
@@ -94,12 +94,24 @@ class Playtime
         playtime_week = data[i][1]
         time_difference = DateTime.parse(date_time_last).to_time.to_i - DateTime.parse(date_time_week).to_time.to_i
         week_factor = 604800.0 / time_difference
-        puts week_factor, playtime_last, playtime_week, time_difference, date_time_week, date_time_last
         output["last_week"] = (playtime_last - playtime_week) * week_factor / 3600
 
         # speltid per dag i snitt.
         output["average_day"] = playtime_difference / ((DateTime.parse(date_time_last).to_time.to_i - DateTime.parse(date_time_first).to_time.to_i) / 86400.0) / 3600
         return output
+    end
+    def graphdata(user, data)
+        points = []
+        point_markers = []
+        data.each do |d|
+            points.append(d[1]/3600)
+            point_markers.append(d[0][5..9])
+        end
+        graph = Scruffy::Graph.new(title:user,:point_markers => point_markers)
+        graph.add(:line, "Playtime, h", points)
+        path = "./public/misc/#{user}-#{Dir["./public/misc/#{user}*"].size}.png"
+        graph.render(:size => [1920,1080], :as => 'png', :to => path)
+        return path
     end
 end
 # print "client id:"

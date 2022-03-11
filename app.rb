@@ -1,5 +1,6 @@
 require 'sinatra'
 require 'sinatra/reloader'
+require 'sqlite3'
 require_relative 'playtime.rb'
 # require_relative 'database'
 
@@ -27,6 +28,7 @@ get '/extrapolate' do
     extrapolated_user_data = {}
     @user_list_with_data = database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc")
     pt.combinename(@user_list_with_data).each do |user_name, data|
+        pt.graphdata(user_name, data)
         extrapolated_user_data[user_name] = pt.extrapolate(data)
     end
     extrapolated_user_data.to_s
