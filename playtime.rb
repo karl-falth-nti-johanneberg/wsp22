@@ -53,9 +53,9 @@ class Playtime
         user_id = db.execute("select user_id from users where osu_id = ?", osu_id).first["user_id"]
         db.execute("insert into playtime_records (user_id, date_time, playtime) values (? ,? ,?)", user_id, date_time, playtime)
     end
-    def combinename(user_list_with_data)
+    def combinename(database)
         output = {}
-        user_list_with_data.each_with_index do |data, i|
+        database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc").each_with_index do |data, i|
             if output[data["user_name"]] == nil
                 output[data["user_name"]] = [[data["date_time"], data["playtime"]]]
             elsif output[data["user_name"]]
@@ -76,7 +76,7 @@ class Playtime
         date_time_last  = data[-1][0]
         time_difference = DateTime.parse(date_time_last).to_time.to_i - DateTime.parse(date_time_first).to_time.to_i
         playtime_difference = data[-1][1] - data[0][1]
-        output["percent"] = ((playtime_difference.to_f / time_difference.to_f)*100)
+        output["percent"] = [((playtime_difference.to_f / time_difference.to_f)*100), "Since: " + date_time_first]
 
         # senaste veckans speltid.
         date_time_week = date_time_last

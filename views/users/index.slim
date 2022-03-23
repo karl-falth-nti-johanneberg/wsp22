@@ -1,0 +1,8 @@
+header
+    h1 
+       | Osu Playtime
+main
+    - if @user_list_with_data != nil
+        - @user_list_with_data.each do |line|
+            p 
+                a href="#{line["user_name"]}/update" #{line["user_name"]}, #{line["date_time"]}, #{line["playtime"]}
