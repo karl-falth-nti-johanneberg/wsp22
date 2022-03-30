@@ -17,15 +17,28 @@ end
 get '/users/new' do
     slim(:"users/new")
 end
-post '/users/new' do
-    db.execute("insert into users ()", pt.get(params[:user]))
+post '/users' do
+    new_user = pt.get(params[:user])
+    user_name, user_id = new_user[1], new_user[2]
+    db.execute("insert into users (osu_id, user_name) values ?,?", user_id, user_name)
+    redirect('/users/' + user_name)
+end
+get '/users/:username' do
+    @user = database.execute("select osu_id, user_name from users where user_name = ?", params[:username]).first
+    if @user == nil
+        return "user isn't registered to the database."
+    end
+    return @user["user_name"]
+    @user["extrapolated_data"] = pt.combinename(database)[@user["user_name"]]
+    @user["graph_image_path"] = pt.graphdata(@user["user_name"], @user["extrapolated_data"])
+    slim(:"users/show")
 end
 get '/users/:username/update' do
     if database.execute("select * from users where user_name=?", params[:username]).first == nil
         "user isn't registered to the database."
     else
         pt.getdb(params[:username], "", database)
-        redirect '/'
+        redirect '/users/'
     end
 end
 get '/extrapolate' do

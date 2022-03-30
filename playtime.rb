@@ -107,7 +107,7 @@ class Playtime
             points.append(d[1]/3600)
             point_markers.append(d[0][5..9])
         end
-        graph = Scruffy::Graph.new(title:user,:point_markers => point_markers)
+        graph = Scruffy::Graph.new(:title => user,:point_markers => point_markers)
         graph.add(:line, "Playtime, h", points)
         path = "./public/misc/#{user}-#{Dir["./public/misc/#{user}*"].size}.png"
         graph.render(:size => [1920,1080], :as => 'png', :to => path)
