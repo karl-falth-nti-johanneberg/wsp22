@@ -27,7 +27,7 @@ class Playtime
             raise "Input isn't either an id or username."
         end
         raise "Nonexistant user" if response.code != 200
-        playtime, username, user_id = response.parse["statistics"]["play_time"], response.parse["username"], response.parse["user_id"]
+        playtime, username, user_id = response.parse["statistics"]["play_time"], response.parse["username"], response.parse["id"]
         if format == "hours"
             playtime = "%02d:%02d:%02d" % [playtime/3600, (playtime/60)%60, playtime%60]
             return [playtime, username]
@@ -54,12 +54,23 @@ class Playtime
         db.execute("insert into playtime_records (user_id, date_time, playtime) values (? ,? ,?)", user_id, date_time, playtime)
     end
     def combinename(database)
+        input = {}
         output = {}
         database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc").each_with_index do |data, i|
-            if output[data["user_name"]] == nil
-                output[data["user_name"]] = [[data["date_time"], data["playtime"]]]
-            elsif output[data["user_name"]]
-                output[data["user_name"]].append([data["date_time"], data["playtime"]])
+            if input[data["user_name"]] == nil
+                input[data["user_name"]] = [[data["date_time"], data["playtime"]]]
+            elsif input[data["user_name"]]
+                input[data["user_name"]].append([data["date_time"], data["playtime"]])
+            end
+        end
+        input.each do |key, value|
+            output[key] = [value[0]]
+            i = 1
+            until i == value.length-1
+                if value[i-1][1] != value[i][1]
+                    output[key].append(value[i])
+                end
+                i += 1
             end
         end
         return output
@@ -101,17 +112,22 @@ class Playtime
         return output
     end
     def graphdata(user, data)
+        data = data[1..-1] if data.length%2 == 0
         points = []
         point_markers = []
-        data.each do |d|
+        data.each_with_index do |d, i|
             points.append(d[1]/3600)
-            point_markers.append(d[0][5..9])
+            if i%2 == 0
+                point_markers.append(d[0][5..9])
+            else
+                point_markers.append("")
+            end
         end
         graph = Scruffy::Graph.new(:title => user,:point_markers => point_markers)
         graph.add(:line, "Playtime, h", points)
         path = "./public/misc/#{user}-#{Dir["./public/misc/#{user}*"].size}.png"
-        graph.render(:size => [1920,1080], :as => 'png', :to => path)
-        return path
+        graph.render(:size => [1920,1080], :as => 'PNG', :to => path)
+        return path[8..-1]
     end
 end
 # print "client id:"

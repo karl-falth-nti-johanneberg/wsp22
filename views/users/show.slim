@@ -1,2 +1,5 @@
-h1 #{@user["username"]}
+h1 #{@user["user_name"]}
+a href="./#{@user["user_name"]}/update"
+    h2 Update data.
+p = @user["extrapolated_data"]
 img src=@user["graph_image_path"]

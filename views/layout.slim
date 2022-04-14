@@ -5,5 +5,11 @@ nav
         h1 Users
     a href="/extrapolate"
         h1 Extrapolate
-    a href=""
+    a href="/login"
+        h2 Login 
+    a href="/users/new"
+        h2 Register
+    -if @logged_in_user_id != nil
+        a href="/logout"
+            h2 Logout 
 ==yield

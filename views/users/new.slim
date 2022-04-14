@@ -1,3 +1,7 @@
-form action="users" method="post"
-    input type="text" value="Username" name="user"
+form action="/users" method="post"
+    input type="checkbox" value="true" name="register" id="register"
+    label for="register" Check box to register a user account, otherwise leave empty.
+    input type="text" placeholder="Username" name="username"
+    input type="password" placeholder="Password" name="password"
+    input type="password" placeholder="Confirm password" name="password_confirm"
     input type="submit" value="Add user to database"
