@@ -112,7 +112,7 @@ class Playtime
         return output
     end
     def graphdata(user, data)
-        data = data[1..-1] if data.length%2 == 0
+        data = data[1..-1] if data.length%2 == 0 && data.length > 2
         points = []
         point_markers = []
         data.each_with_index do |d, i|
@@ -123,6 +123,7 @@ class Playtime
                 point_markers.append("")
             end
         end
+        point_markers = [data[0][0][5..9], data[1][0][5..9]] if data.length == 2
         graph = Scruffy::Graph.new(:title => user,:point_markers => point_markers)
         graph.add(:line, "Playtime, h", points)
         path = "./public/misc/#{user}-#{Dir["./public/misc/#{user}*"].size}.png"

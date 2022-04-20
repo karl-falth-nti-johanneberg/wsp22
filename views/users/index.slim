@@ -3,6 +3,9 @@ header
        | Osu Playtime
 main
     - if @user_list_with_data != nil
-        - @user_list_with_data.each do |line|
+        - @user_list_with_data.each do |key, value|
             p 
-                a href="#{line["user_name"]}/update" #{line["user_name"]}, #{line["date_time"]}, #{line["playtime"]}
+                a href="#{key}/update" 
+                    h1 #{key} 
+                h4 last updated on: #{value.last.first}
+                h3 playtime: #{(value.last.last/3600.0).round(2)} hours

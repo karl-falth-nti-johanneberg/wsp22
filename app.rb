@@ -11,11 +11,13 @@ pt = Playtime.new
 # exempel: pt.getdb("cheesemax", "", database)
 
 before do
+    @logged_in_user = {}
     if defined?(session[:logged_in_user_id])
-        @logged_in_user_id = session[:logged_in_user_id]
+        @logged_in_user[:id] = session[:logged_in_user_id]
     else
-        @logged_in_user_id, session[:logged_in_user_id] = nil, nil
+        @logged_in_user[:id], session[:logged_in_user_id] = nil, nil
     end
+    @logged_in_user[:name] = database.execute("select user_name from users where user_id = ?", @logged_in_user[:id]).first["user_name"]
 end
 
 get '/' do
@@ -44,7 +46,8 @@ get '/logout' do
     redirect('/')
 end
 get '/users/' do
-    @user_list_with_data = database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc")
+    # @user_list_with_data = database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc")
+    @user_list_with_data = pt.combinename(database)
     slim(:"users/index")
 end
 get '/users/new' do
