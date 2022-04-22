@@ -1,6 +1,7 @@
 nav
-    a href="/users/#{@logged_in_user[:name]}" 
-        h1 Your profile: #{@logged_in_user[:name]}
+    - if @logged_in_user[:name] != nil
+        a href="/users/#{@logged_in_user[:name]}" 
+            h1 Your profile: #{@logged_in_user[:name]}
     a href="/"
         h1 Home
     a href="/users/"

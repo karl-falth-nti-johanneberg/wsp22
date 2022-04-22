@@ -12,12 +12,12 @@ pt = Playtime.new
 
 before do
     @logged_in_user = {}
-    if defined?(session[:logged_in_user_id])
+    if defined?(session[:logged_in_user_id]) && session[:logged_in_user_id] != nil
         @logged_in_user[:id] = session[:logged_in_user_id]
+        @logged_in_user[:name] = database.execute("select user_name from users where user_id = ?", @logged_in_user[:id]).first["user_name"]
     else
         @logged_in_user[:id], session[:logged_in_user_id] = nil, nil
     end
-    @logged_in_user[:name] = database.execute("select user_name from users where user_id = ?", @logged_in_user[:id]).first["user_name"]
 end
 
 get '/' do

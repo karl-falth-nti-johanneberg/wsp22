@@ -87,7 +87,7 @@ class Playtime
         date_time_last  = data[-1][0]
         time_difference = DateTime.parse(date_time_last).to_time.to_i - DateTime.parse(date_time_first).to_time.to_i
         playtime_difference = data[-1][1] - data[0][1]
-        output["percent"] = [((playtime_difference.to_f / time_difference.to_f)*100), "Since: " + date_time_first]
+        output["percent"] = [((playtime_difference.to_f / time_difference.to_f)*100), "since: " + date_time_first]
 
         # senaste veckans speltid.
         date_time_week = date_time_last
@@ -127,7 +127,7 @@ class Playtime
         graph = Scruffy::Graph.new(:title => user,:point_markers => point_markers)
         graph.add(:line, "Playtime, h", points)
         path = "./public/misc/#{user}-#{Dir["./public/misc/#{user}*"].size}.png"
-        graph.render(:size => [1920,1080], :as => 'PNG', :to => path)
+        graph.render(:size => [640,480], :as => 'PNG', :to => path)
         return path[8..-1]
     end
 end
