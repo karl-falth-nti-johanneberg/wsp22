@@ -15,6 +15,9 @@ before do
     if defined?(session[:logged_in_user_id]) && session[:logged_in_user_id] != nil
         @logged_in_user[:id] = session[:logged_in_user_id]
         @logged_in_user[:name] = database.execute("select user_name from users where user_id = ?", @logged_in_user[:id]).first["user_name"]
+        database.results_as_hash = false
+        @logged_in_user[:friends] = database.execute("select user_name from users inner join friends on friended_id = user_id where friender_id = ?", @logged_in_user[:id])
+        database.results_as_hash = true
     else
         @logged_in_user[:id], session[:logged_in_user_id] = nil, nil
     end
@@ -23,9 +26,11 @@ end
 get '/' do
     slim(:index)
 end
+
 get '/login' do
     slim(:login)
 end
+
 post '/login' do
     username, password = params[:username], params[:password]
     result = database.execute("select user_id, password_digest from users where user_name = ?", username).first
@@ -41,18 +46,22 @@ post '/login' do
         return "Wrong password."
     end
 end
+
 get '/logout' do
     session[:logged_in_user_id] = nil
     redirect('/')
 end
+
 get '/users/' do
     # @user_list_with_data = database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc")
     @user_list_with_data = pt.combinename(database)
     slim(:"users/index")
 end
+
 get '/users/new' do
     slim(:"users/new")
 end
+
 post '/users' do
     username, password, password_confirm = params[:username], params[:password], params[:password_confirm]
 
@@ -65,7 +74,7 @@ post '/users' do
         if result != nil
             return "User #{username} is already being tracked."
         end
-        database.execute("insert into users (osu_id, user_name) values (?,?)", user_id, osu_id)
+        database.execute("insert into users (osu_id, user_name) values (?,?)", osu_id, username)
     else
         if result["password_digest"] != nil
             return "User #{username} is already registered."
@@ -80,8 +89,13 @@ post '/users' do
             database.execute("insert into users (osu_id, user_name, password_digest) values (?,?,?)", osu_id, username, password_digest)
         end
     end
-    redirect('/users/' + username)
+    redirect('/users/' + username + '/update')
 end
+
+get '/users/:username/friend' do
+    
+end
+
 get '/users/:username' do
     @user = database.execute("select osu_id, user_name from users where user_name = ?", params[:username]).first
     if @user == nil
@@ -100,6 +114,7 @@ get '/users/:username/update' do
         redirect '/users/' + params[:username]
     end
 end
+
 get '/extrapolate' do
     extrapolated_user_data = {}
     pt.combinename(database).each do |user_name, data|

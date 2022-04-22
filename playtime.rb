@@ -66,7 +66,7 @@ class Playtime
         input.each do |key, value|
             output[key] = [value[0]]
             i = 1
-            until i == value.length-1
+            until i == value.length-1 || value.length-1 == 0
                 if value[i-1][1] != value[i][1]
                     output[key].append(value[i])
                 end
@@ -80,7 +80,7 @@ class Playtime
         #                       senaste veckans speltid.
         #                       speltid per dag i snitt.
         output = {"percent" => nil, "last_week" => nil, "average_day" => nil}
-
+        return nil if data == nil 
         # skillnad i speltid mellan tidigaste och senaste datapunkten / skillnad i faktisk tid mellan tidigaste och senaste datapunkten.
         # vill ha funktionalitet för att själv kunna välja vilka datapunkter som ska användas.
         date_time_first = data[0][0]
@@ -112,6 +112,7 @@ class Playtime
         return output
     end
     def graphdata(user, data)
+        return "/img/missing_data.png" if data == nil 
         data = data[1..-1] if data.length%2 == 0 && data.length > 2
         points = []
         point_markers = []
