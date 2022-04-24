@@ -1,3 +1,14 @@
+<!DOCTYPE html>
+html lang="en"
+    head
+        meta charset="UTF-8"/
+        meta http-equiv="X-UA-Compatible" content="IE=edge"/
+        meta name="viewport" content="width=device-width, initial-scale=1.0"/
+        link rel="stylesheet" href="/css/style.css"/
+        link rel="shortcut icon" href="/misc/favicon.png" type="image/x-icon"/
+        title osu!playtime
+    body 
+
 nav
     - if @logged_in_user[:name] != nil
         a href="/users/#{@logged_in_user[:name]}" 
@@ -6,13 +17,12 @@ nav
         h1 Home
     a href="/users/"
         h1 Users
-    a href="/extrapolate"
-        h1 Extrapolate
-    a href="/login"
-        h2 Login 
-    a href="/users/new"
-        h2 Register
-    -if @logged_in_user_id != nil
+    -if @logged_in_user[:id] != nil
         a href="/logout"
             h2 Logout 
+    -else
+        a href="/login"
+            h2 Login 
+        a href="/users/new"
+            h2 Register
 ==yield

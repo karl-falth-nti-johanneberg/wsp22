@@ -1,10 +1,24 @@
-h1 #{@user["user_name"]}
-a href="./#{@user["user_name"]}/update"
-    h2 Update data.
-- if @user["extrapolated_data"] != nil
-    h2 Percent played #{@user["extrapolated_data"]["percent"][1]}; #{@user["extrapolated_data"]["percent"][0].round(2)}%
-    h2 Playtime during last week: #{@user["extrapolated_data"]["last_week"].round(2)} hours.
-    h2 Average playtime per day #{@user["extrapolated_data"]["percent"][1]}; #{@user["extrapolated_data"]["average_day"].round(2)} hours.
-img src=@user["graph_image_path"]
+.profile
+    .profile_data
+        h1 #{@user["user_name"]}
+        h2 #{(@user["data"].last.last/3600.0).round(2)} hours.
+        a href="./#{@user["user_name"]}/update"
+            h2 Update data.
+        - if @user["extrapolated_data"] != nil
+            h2 Percent played #{@user["extrapolated_data"]["percent"][1]}; #{@user["extrapolated_data"]["percent"][0].round(2)}%
+            h2 Playtime during last week: #{@user["extrapolated_data"]["last_week"].round(2)} hours.
+            h2 Average playtime per day #{@user["extrapolated_data"]["percent"][1]}; #{@user["extrapolated_data"]["average_day"].round(2)} hours.
+        img src=@user["graph_image_path"]
 
-h1 Friend's list
+    -if @user["user_name"] == @logged_in_user[:name]
+        .friends_list
+            h1 Friend's list
+            -@logged_in_user[:friends].each do |friend|
+                .friend_name
+                    a href="./#{friend.first}" 
+                        h2 #{friend.first}
+                    a href="./#{friend.first}/unfriend"
+                        h3 Remove as friend.
+                    -if @logged_in_user[:followers].include?(friend)
+                        h3 You are mutuals!
+                h3 #{(@friends[friend.first].last.last/3600.0).round(2)} hours.

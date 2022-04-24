@@ -1,0 +1,25 @@
+nav{
+    display: flex;
+    flex-direction: row;
+    
+}
+nav > a {
+    margin: 0 40px 0 0;
+}
+.profile{
+    display:flex;
+    flex-direction: row;
+}
+.friends_list{
+    margin-left: 10px;
+}
+.friend_name{
+    display:flex;
+    flex-direction: row;
+}
+.friend_name > * > *{
+    margin: 0 40px 0 0;
+}
+.friend_name > *{
+    margin: 0 40px 0 0;
+}

@@ -17,6 +17,7 @@ before do
         @logged_in_user[:name] = database.execute("select user_name from users where user_id = ?", @logged_in_user[:id]).first["user_name"]
         database.results_as_hash = false
         @logged_in_user[:friends] = database.execute("select user_name from users inner join friends on friended_id = user_id where friender_id = ?", @logged_in_user[:id])
+        @logged_in_user[:followers] = database.execute("select user_name from users inner join friends on friender_id = user_id where friended_id = ?", @logged_in_user[:id])
         database.results_as_hash = true
     else
         @logged_in_user[:id], session[:logged_in_user_id] = nil, nil
@@ -48,7 +49,7 @@ post '/login' do
 end
 
 get '/logout' do
-    session[:logged_in_user_id] = nil
+    session[:logged_in_user_id], @logged_in_user = nil, nil
     redirect('/')
 end
 
@@ -93,7 +94,27 @@ post '/users' do
 end
 
 get '/users/:username/friend' do
-    
+    friender_id = @logged_in_user[:id]
+    friended_id = database.execute("select user_id from users where user_name = ?", params[:username]).first["user_id"]
+    result = database.execute("select * from friends where friender_id = ? and friended_id = ?", friender_id, friended_id).first
+    if result == nil
+        database.execute("insert into friends (friender_id, friended_id) values (?, ?)", friender_id, friended_id)
+    end
+    redirect('/users/')
+end
+
+get '/users/:username/unfriend' do
+    slim(:unfriend, locals:{friender_name:params[:username]})
+end
+
+post '/users/:username/unfriend' do
+    friender_id = @logged_in_user[:id]
+    friended_id = database.execute("select user_id from users where user_name = ?", params[:username]).first["user_id"]
+    result = database.execute("select friender_id, friended_id from friends where friender_id = ? and friended_id = ?", friender_id, friended_id).first
+    if result["friender_id"] == friender_id && result["friended_id"] == friended_id
+        database.execute("delete from friends where friender_id = ? and friended_id = ?", friender_id, friended_id)
+    end
+    redirect('/users/')
 end
 
 get '/users/:username' do
@@ -101,7 +122,15 @@ get '/users/:username' do
     if @user == nil
         return "user isn't registered to the database."
     end
-    @user["data"] = pt.combinename(database)[@user["user_name"]]
+    result = pt.combinename(database)
+    @user["data"] = result[@user["user_name"]]
+    @friends = {}
+    if @logged_in_user[:friends] != nil
+        @logged_in_user[:friends].each do |friend|
+            friend = friend.first
+            @friends[friend] = result[friend]
+        end
+    end
     @user["extrapolated_data"] = pt.extrapolate(@user["data"])
     @user["graph_image_path"] = pt.graphdata(@user["user_name"], @user["data"])
     slim(:"users/show")
@@ -113,13 +142,4 @@ get '/users/:username/update' do
         pt.getdb(params[:username], "", database)
         redirect '/users/' + params[:username]
     end
-end
-
-get '/extrapolate' do
-    extrapolated_user_data = {}
-    pt.combinename(database).each do |user_name, data|
-        pt.graphdata(user_name, data)
-        extrapolated_user_data[user_name] = pt.extrapolate(data)
-    end
-    return extrapolated_user_data.to_s
 end
