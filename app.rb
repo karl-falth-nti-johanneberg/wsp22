@@ -143,6 +143,7 @@ get '/users/:username' do
     @user["graph_image_path"] = pt.graphdata(@user["user_name"], @user["data"])
     slim(:"users/show")
 end
+
 get '/users/:username/update' do
     if database.execute("select * from users where user_name=?", params[:username]).first == nil
         "user isn't registered to the database."
