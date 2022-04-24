@@ -2,6 +2,8 @@ header
     h1 
        | Osu Playtime
 main
+    a href="/users/new"
+        h2 Add user.
     - if @user_list_with_data != nil
         - @user_list_with_data.each do |user, data|
                 a href="#{user}/update" 

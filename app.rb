@@ -10,6 +10,8 @@ enable :sessions
 pt = Playtime.new
 # exempel: pt.getdb("cheesemax", "", database)
 
+
+
 before do
     @logged_in_user = {}
     if defined?(session[:logged_in_user_id]) && session[:logged_in_user_id] != nil
@@ -94,6 +96,9 @@ post '/users' do
 end
 
 get '/users/:username/friend' do
+    if @logged_in_user[:id] == nil
+        return "You can't access this page without logging in."
+    end
     friender_id = @logged_in_user[:id]
     friended_id = database.execute("select user_id from users where user_name = ?", params[:username]).first["user_id"]
     result = database.execute("select * from friends where friender_id = ? and friended_id = ?", friender_id, friended_id).first
@@ -104,6 +109,9 @@ get '/users/:username/friend' do
 end
 
 get '/users/:username/unfriend' do
+    if @logged_in_user[:id] == nil
+        return "You can't access this page without logging in."
+    end
     slim(:unfriend, locals:{friender_name:params[:username]})
 end
 
