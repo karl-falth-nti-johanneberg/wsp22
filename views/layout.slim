@@ -25,4 +25,7 @@ nav
             h2 Login 
         a href="/users/new"
             h2 Register
+    -if @logged_in_user[:role] == 1
+        a href="/users/delete"
+            h2 Delete users!
 ==yield

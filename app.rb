@@ -16,7 +16,9 @@ before do
     @logged_in_user = {}
     if defined?(session[:logged_in_user_id]) && session[:logged_in_user_id] != nil
         @logged_in_user[:id] = session[:logged_in_user_id]
-        @logged_in_user[:name] = database.execute("select user_name from users where user_id = ?", @logged_in_user[:id]).first["user_name"]
+        result = database.execute("select user_name, role from users where user_id = ?", @logged_in_user[:id]).first
+        @logged_in_user[:name] = result["user_name"]
+        @logged_in_user[:role] = result["role"]
         database.results_as_hash = false
         @logged_in_user[:friends] = database.execute("select user_name from users inner join friends on friended_id = user_id where friender_id = ?", @logged_in_user[:id])
         @logged_in_user[:followers] = database.execute("select user_name from users inner join friends on friender_id = user_id where friended_id = ?", @logged_in_user[:id])
@@ -63,6 +65,27 @@ end
 
 get '/users/new' do
     slim(:"users/new")
+end
+
+before '/users/delete' do
+    role = database.execute("select role from users where user_id = ?", @logged_in_user[:id]).first
+    if role != 1
+        redirect('/')
+    end
+end
+
+get '/users/delete' do
+    @user_list = database.execute("select * from users")
+    slim(:"users/delete")
+end
+
+post '/users/delete' do
+    to_delete = params.keys
+    to_delete.each do |user_id|
+        database.execute("delete from users where user_id = ?", user_id)
+        database.execute("delete from playtime_records where user_id = ?", user_id)
+        database.execute("delete from friends where friender_id = ? or friended_id = ?", user_id, user_id)
+    end
 end
 
 post '/users' do
