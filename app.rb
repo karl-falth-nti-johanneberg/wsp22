@@ -3,29 +3,17 @@ require 'sinatra/reloader'
 require 'sqlite3'
 require 'bcrypt'
 require_relative 'playtime.rb'
+require_relative 'model.rb'
 
-database = SQLite3::Database.new "db/playtime.db"
-database.results_as_hash = true
 enable :sessions
+include Model
 pt = Playtime.new
 # exempel: pt.getdb("cheesemax", "", database)
 
 
 
 before do
-    @logged_in_user = {}
-    if defined?(session[:logged_in_user_id]) && session[:logged_in_user_id] != nil
-        @logged_in_user[:id] = session[:logged_in_user_id]
-        result = database.execute("select user_name, role from users where user_id = ?", @logged_in_user[:id]).first
-        @logged_in_user[:name] = result["user_name"]
-        @logged_in_user[:role] = result["role"]
-        database.results_as_hash = false
-        @logged_in_user[:friends] = database.execute("select user_name from users inner join friends on friended_id = user_id where friender_id = ?", @logged_in_user[:id])
-        @logged_in_user[:followers] = database.execute("select user_name from users inner join friends on friender_id = user_id where friended_id = ?", @logged_in_user[:id])
-        database.results_as_hash = true
-    else
-        @logged_in_user[:id], session[:logged_in_user_id] = nil, nil
-    end
+    before_every_route()
 end
 
 get '/' do
@@ -38,14 +26,12 @@ end
 
 post '/login' do
     username, password = params[:username], params[:password]
-    result = database.execute("select user_id, password_digest from users where user_name = ?", username).first
-    user_id, password_digest = result["user_id"], result["password_digest"]
-    if password_digest == nil
+    result = get_user(username)
+    if result["password_digest"] == nil
         return "User isn't registered."
     end
-    password_digest = BCrypt::Password.new(password_digest)
-    if password_digest == password
-        session[:logged_in_user_id] = user_id
+    if bcrypt(result["password_digest"]) == password
+        session[:logged_in_user_id] = result["user_id"]
         redirect('/')
     else
         return "Wrong password."
@@ -59,7 +45,7 @@ end
 
 get '/users/' do
     # @user_list_with_data = database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc")
-    @user_list_with_data = pt.combinename(database)
+    @user_list_with_data = pt.combinename(open_db())
     slim(:"users/index")
 end
 
@@ -68,24 +54,19 @@ get '/users/new' do
 end
 
 before '/users/delete' do
-    role = database.execute("select role from users where user_id = ?", @logged_in_user[:id]).first
-    if role != 1
+    if current_role() != 1
         redirect('/')
     end
 end
 
 get '/users/delete' do
-    @user_list = database.execute("select * from users")
+    @user_list = user_list()
     slim(:"users/delete")
 end
 
 post '/users/delete' do
     to_delete = params.keys
-    to_delete.each do |user_id|
-        database.execute("delete from users where user_id = ?", user_id)
-        database.execute("delete from playtime_records where user_id = ?", user_id)
-        database.execute("delete from friends where friender_id = ? or friended_id = ?", user_id, user_id)
-    end
+    delete_users(to_delete)
 end
 
 post '/users' do
@@ -94,62 +75,42 @@ post '/users' do
     new_user = pt.get(username, "")
     osu_id = new_user[2]
 
-    result = database.execute("select user_id, password_digest from users where user_name = ?", username).first
+    error = register_user(username, password, password_confirm, osu_id)
 
-    if params[:register] == nil
-        if result != nil
-            return "User #{username} is already being tracked."
-        end
-        database.execute("insert into users (osu_id, user_name) values (?,?)", osu_id, username)
-    else
-        if result["password_digest"] != nil
-            return "User #{username} is already registered."
-        end
-        if password != password_confirm
-            return "Password wasn't confirmed properly."
-        end
-        password_digest = BCrypt::Password.create(password)
-        if result["user_id"] != nil
-            database.execute("update users set password_digest = ? where user_id = ?", password_digest, result["user_id"])
-        else
-            database.execute("insert into users (osu_id, user_name, password_digest) values (?,?,?)", osu_id, username, password_digest)
-        end
+    if error.class == String
+        return error
     end
+
     redirect('/users/' + username + '/update')
 end
 
+
 get '/users/:username/friend' do
-    if @logged_in_user[:id] == nil
-        return "You can't access this page without logging in."
-    end
-    friender_id = @logged_in_user[:id]
-    friended_id = database.execute("select user_id from users where user_name = ?", params[:username]).first["user_id"]
-    result = database.execute("select * from friends where friender_id = ? and friended_id = ?", friender_id, friended_id).first
-    if result == nil
-        database.execute("insert into friends (friender_id, friended_id) values (?, ?)", friender_id, friended_id)
+    return logged_in?() if logged_in?() != nil
+    error = friend(params[:username])
+    if error.class == String
+        return error
     end
     redirect('/users/')
 end
 
 get '/users/:username/unfriend' do
-    if @logged_in_user[:id] == nil
-        return "You can't access this page without logging in."
-    end
+    return logged_in?() if logged_in?() != nil
     slim(:unfriend, locals:{friender_name:params[:username]})
 end
 
 post '/users/:username/unfriend' do
-    friender_id = @logged_in_user[:id]
-    friended_id = database.execute("select user_id from users where user_name = ?", params[:username]).first["user_id"]
-    result = database.execute("select friender_id, friended_id from friends where friender_id = ? and friended_id = ?", friender_id, friended_id).first
-    if result["friender_id"] == friender_id && result["friended_id"] == friended_id
-        database.execute("delete from friends where friender_id = ? and friended_id = ?", friender_id, friended_id)
+    return logged_in?() if logged_in?() != nil
+    error = friend(params[:username])
+    if error.class == String
+        return error
     end
     redirect('/users/')
 end
 
 get '/users/:username' do
-    @user = database.execute("select osu_id, user_name from users where user_name = ?", params[:username]).first
+    database = open_db()
+    @user = get_user(params[:username])
     if @user == nil
         return "user isn't registered to the database."
     end
@@ -168,10 +129,5 @@ get '/users/:username' do
 end
 
 get '/users/:username/update' do
-    if database.execute("select * from users where user_name=?", params[:username]).first == nil
-        "user isn't registered to the database."
-    else
-        pt.getdb(params[:username], "", database)
-        redirect '/users/' + params[:username]
-    end
+    update_user(params, pt)
 end
