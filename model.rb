@@ -28,6 +28,7 @@ module Model
             return {}
         else
             return result
+        end
     end
 
     def bcrypt(password_digest)
@@ -110,5 +111,9 @@ module Model
             database.execute("delete from friends where friender_id = ? and friended_id = ?", friender_id, friended_id)
             return nil
         end
+    end
+
+    def log(session)
+        session[:log] = Time.now()
     end
 end

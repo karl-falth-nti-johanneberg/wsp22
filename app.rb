@@ -8,9 +8,6 @@ require_relative 'model.rb'
 enable :sessions
 include Model
 pt = Playtime.new
-# exempel: pt.getdb("cheesemax", "", database)
-
-
 
 before do
     @logged_in_user = {}
@@ -26,15 +23,20 @@ get '/login' do
 end
 
 post '/login' do
+    if session[:log] != nil && Time.now - session[:log] <= 5
+        return "You are on cooldown, stop trying to log in so fast!"
+    end
     username, password = params[:username], params[:password]
     result = get_user(username)
     if result["password_digest"] == nil
+        log(session)
         return "User isn't registered."
     end
     if bcrypt(result["password_digest"]) == password
         session[:logged_in_user_id] = result["user_id"]
         redirect('/')
     else
+        log(session)
         return "Wrong password."
     end
 end
@@ -72,17 +74,21 @@ post '/users/delete' do
 end
 
 post '/users' do
+    if session[:log] != nil && Time.now - session[:log] <= 5
+        return "You are on cooldown, stop trying to register people so fast!"
+    end
     username, password, password_confirm = params[:username], params[:password], params[:password_confirm]
 
     new_user = pt.get(username, "")
     osu_id = new_user[2]
 
     error = register_user(username, password, password_confirm, osu_id)
-
+    
+    log(session)
     if error.class == String
         return error
     end
-
+    
     redirect('/users/' + username + '/update')
 end
 
@@ -102,8 +108,14 @@ get '/users/:username/unfriend' do
 end
 
 post '/users/:username/unfriend' do
+    if session[:log] != nil && Time.now - session[:log] <= 5
+        return "You are on cooldown, stop trying to unfriend people so fast!"
+    end
     return logged_in?() if logged_in?() != nil
     error = friend(params[:username])
+
+    log(session)
+
     if error.class == String
         return error
     end
