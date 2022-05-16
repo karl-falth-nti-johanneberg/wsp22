@@ -13,7 +13,8 @@ pt = Playtime.new
 
 
 before do
-    before_every_route()
+    @logged_in_user = {}
+    before_every_route(session)
 end
 
 get '/' do
@@ -54,7 +55,7 @@ get '/users/new' do
 end
 
 before '/users/delete' do
-    if current_role() != 1
+    if @logged_in_user[:role] != 1
         redirect('/')
     end
 end
@@ -67,6 +68,7 @@ end
 post '/users/delete' do
     to_delete = params.keys
     delete_users(to_delete)
+    redirect('/users/delete')
 end
 
 post '/users' do
@@ -109,12 +111,11 @@ post '/users/:username/unfriend' do
 end
 
 get '/users/:username' do
-    database = open_db()
     @user = get_user(params[:username])
     if @user == nil
         return "user isn't registered to the database."
     end
-    result = pt.combinename(database)
+    result = pt.combinename(open_db())
     @user["data"] = result[@user["user_name"]]
     @friends = {}
     if @logged_in_user[:friends] != nil

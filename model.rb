@@ -5,9 +5,8 @@ module Model
         return database
     end
 
-    def before_every_route()
+    def before_every_route(session)
         database = open_db()
-        @logged_in_user = {}
         if defined?(session[:logged_in_user_id]) && session[:logged_in_user_id] != nil
             @logged_in_user[:id] = session[:logged_in_user_id]
             result = database.execute("select user_name, role from users where user_id = ?", @logged_in_user[:id]).first
@@ -25,16 +24,14 @@ module Model
     def get_user(username)
         database = open_db()
         result = database.execute("select * from users where user_name = ?", username).first
-        return result
+        if result == nil
+            return {}
+        else
+            return result
     end
 
     def bcrypt(password_digest)
         return BCrypt::Password.new(password_digest)
-    end
-
-    def current_role()
-        database = open_db()
-        return database.execute("select role from users where user_id = ?", @logged_in_user[:id]).first
     end
 
     def user_list()
