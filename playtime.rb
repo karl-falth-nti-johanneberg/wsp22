@@ -1,9 +1,18 @@
 require 'http'
 require 'Scruffy'
+
+# Class that establishes a connection to the osu! game api.
+# Also pulls data from the api as well as extrapolates it and generates graphs.
+#
 class Playtime
     @@client_id = 12307
     @@client_secret = "82Wwjem9FHYMKrxXDy39D4lg0vaJfKH9Hy25eOW5"
-    def initialize() # Establish connection with osu! servers, providing access to user data. Mainly playtime will be gathered, but also usernames and user id's 
+
+    # Establish connection with osu! servers, providing access to user data.
+    # Mainly playtime will be gathered, but also usernames and user id's.
+    #
+    # @return [Boolean] true if no errors.
+    def initialize()
         url = "https://osu.ppy.sh/oauth/token"
         raise "Client id isn't an integer" if @@client_id.class != Integer
         params = {client_id:@@client_id, client_secret:@@client_secret, grant_type:"client_credentials", scope:"public"}
@@ -16,7 +25,14 @@ class Playtime
         @access_token = response.parse["access_token"]
         return true
     end
-    def get(user, format) # Get playtime in seconds or hours for a specified user.
+
+    # Get playtime in seconds or hours for a specified user.
+    #
+    # @param [String, Integer] user, Either String or Integer, represents an osu user's username or id.
+    # @param [String] format, Decides what is included in the output.
+    #
+    # @return [Array] Mainly three elements, if format == hours only two elements.
+    def get(user, format)
         if user.class == String
             url = "https://osu.ppy.sh/api/v2/users/" + user
             response = HTTP.auth("Bearer " + @access_token).get(url, :params => {:key => "username"})    
@@ -34,6 +50,14 @@ class Playtime
         end
         return [playtime, username, user_id]
     end
+
+    # Gets new data about osu player and puts it in the database.
+    #
+    # @param [String, Integer] user, Either String or Integer, represents an osu user's username or id.
+    # @param [String] format, Decides what is included in the output.
+    # @param [Object] db, Database object.
+    #
+    # @return [NilClass]
     def getdb(user, format, db)
         if user.class == String
             url = "https://osu.ppy.sh/api/v2/users/" + user
@@ -52,7 +76,14 @@ class Playtime
         end
         user_id = db.execute("select user_id from users where osu_id = ?", osu_id).first["user_id"]
         db.execute("insert into playtime_records (user_id, date_time, playtime) values (? ,? ,?)", user_id, date_time, playtime)
+        return nil
     end
+
+    # Creates hash with each user's full data history.
+    #
+    # @param [Object] database, Database object.
+    #
+    # @return [Hash] Contains the user's playtime history.
     def combinename(database)
         input = {}
         output = {}
