@@ -10,10 +10,10 @@ main
                     h1 #{user} 
                 - if @logged_in_user[:name] != nil && @logged_in_user[:name] != user
                     - if @logged_in_user[:friends].include?([user])
-                        a href="#{user}/unfriend"
+                        a href="users/#{user}/unfriend"
                             h2 Remove friend
                     -else
-                        a href="#{user}/friend"
+                        a href="users/#{user}/friend"
                             h2 Add as friend
                 h4 last updated on: #{data.last.first}
                 h3 playtime: #{(data.last.last/3600.0).round(2)} hours
