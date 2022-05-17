@@ -6,7 +6,7 @@ main
         h2 Add user.
     - if @user_list_with_data != nil
         - @user_list_with_data.each do |user, data|
-                a href="#{user}/update" 
+                a href="users/#{user}/update" 
                     h1 #{user} 
                 - if @logged_in_user[:name] != nil && @logged_in_user[:name] != user
                     - if @logged_in_user[:friends].include?([user])

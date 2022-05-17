@@ -15,7 +15,7 @@ nav
             h1 Your profile: #{@logged_in_user[:name]}
     a href="/"
         h1 Home
-    a href="/users/"
+    a href="/users"
         h1 Users
     -if @logged_in_user[:id] != nil
         a href="/logout"

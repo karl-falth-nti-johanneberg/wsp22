@@ -46,7 +46,7 @@ get '/logout' do
     redirect('/')
 end
 
-get '/users/' do
+get '/users' do
     # @user_list_with_data = database.execute("select user_name, date_time, playtime from users inner join playtime_records on users.user_id = playtime_records.user_id order by playtime_records.id asc")
     @user_list_with_data = pt.combinename(open_db())
     slim(:"users/index")
@@ -99,7 +99,7 @@ get '/users/:username/friend' do
     if error.class == String
         return error
     end
-    redirect('/users/')
+    redirect('/users')
 end
 
 get '/users/:username/unfriend' do
@@ -119,7 +119,7 @@ post '/users/:username/unfriend' do
     if error.class == String
         return error
     end
-    redirect('/users/')
+    redirect('/users')
 end
 
 get '/users/:username' do
