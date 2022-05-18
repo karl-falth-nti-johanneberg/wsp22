@@ -7,12 +7,15 @@ require_relative 'model.rb'
 
 enable :sessions
 include Model
-include Playtime
 pt = Playtime.new
 
 before do
     @logged_in_user = {}
-    before_every_route(session)
+    if defined?(session[:logged_in_user_id]) && session[:logged_in_user_id] != nil
+        before_every_route(session[:logged_in_user_id])
+    else
+        @logged_in_user[:id], session[:logged_in_user_id] = nil, nil
+    end
 end
 
 # Displays landing page.
@@ -44,14 +47,14 @@ post '/login' do
     username, password = params[:username], params[:password]
     result = get_user(username)
     if result["password_digest"] == nil
-        log(session)
+        session[:log] = log()
         return "User isn't registered."
     end
     if bcrypt(result["password_digest"]) == password
         session[:logged_in_user_id] = result["user_id"]
         redirect('/')
     else
-        log(session)
+        session[:log] = log()
         return "Wrong password."
     end
 end
@@ -124,7 +127,7 @@ end
 # @see Model#register_user
 # @see Model#log
 post '/users' do
-    if session[:log] != nil && Time.now - session[:log] <= 5
+    if session[:log] != nil && Time.now - session[:log] <= 10
         return "You are on cooldown, stop trying to register people so fast!"
     end
     username, password, password_confirm = params[:username], params[:password], params[:password_confirm]
@@ -132,9 +135,15 @@ post '/users' do
     new_user = pt.get(username, "")
     osu_id = new_user[2]
 
-    error = register_user(username, password, password_confirm, osu_id)
+    if params[:register] == nil
+        register_account = false
+    else
+        register_account = true
+    end
+
+    error = register_user(username, password, password_confirm, osu_id, register_account)
     
-    log(session)
+    session[:log] = log()
     if error.class == String
         return error
     end
@@ -171,13 +180,13 @@ end
 #
 # @see Model#log
 post '/users/:username/unfriend' do
-    if session[:log] != nil && Time.now - session[:log] <= 5
+    if session[:log] != nil && Time.now - session[:log] <= 1
         return "You are on cooldown, stop trying to unfriend people so fast!"
     end
     return logged_in() if logged_in() != nil
     error = friend(params[:username])
 
-    log(session)
+    session[:log] = log()
 
     if error.class == String
         return error
@@ -192,9 +201,9 @@ end
 # @param [Hash] result, Contains all the playtime information in the database.
 # @param [Hash] @friends, Contains all the friends of the user, along with their data.
 #
-# @see Method#get_user
+# @see Model#get_user
 # @see Playtime#combinename
-# @see Method#open_db
+# @see Model#open_db
 # @see Playtime#extrapolate
 # @see Playtime#graphdata
 get '/users/:username' do
@@ -223,12 +232,15 @@ end
 #
 # @see Model#update_user
 get '/users/:username/update' do
-    if session[:log] != nil && Time.now - session[:log] <= 10
+    if session[:log] != nil && Time.now - session[:log] <= 0.5
         return "You are on cooldown, stop trying to update profiles so fast!"
     end
-    error = update_user(params, pt)
 
-    log(session)
+    username = params[:username]
+
+    error = update_user(username, pt)
+
+    session[:log] = log()
 
     if error.class == String
         return error

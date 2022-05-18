@@ -12,25 +12,21 @@ module Model
 
     # Gathers information about the current user, which is used on the pages. This is called on each route.
     #
-    # @param [Hash] session, contains persisting information unique for each user of the page.
+    # @param [Integer] logged_in_user_id, The logged in user.
     #
     # @see Model#open_db
     #
     # @return [NilClass]
-    def before_every_route(session)
+    def before_every_route(logged_in_user_id)
         database = open_db()
-        if defined?(session[:logged_in_user_id]) && session[:logged_in_user_id] != nil
-            @logged_in_user[:id] = session[:logged_in_user_id]
-            result = database.execute("select user_name, role from users where user_id = ?", @logged_in_user[:id]).first
-            @logged_in_user[:name] = result["user_name"]
-            @logged_in_user[:role] = result["role"]
-            database.results_as_hash = false
-            @logged_in_user[:friends] = database.execute("select user_name from users inner join friends on friended_id = user_id where friender_id = ?", @logged_in_user[:id])
-            @logged_in_user[:followers] = database.execute("select user_name from users inner join friends on friender_id = user_id where friended_id = ?", @logged_in_user[:id])
-            database.results_as_hash = true
-        else
-            @logged_in_user[:id], session[:logged_in_user_id] = nil, nil
-        end
+        @logged_in_user[:id] = logged_in_user_id
+        result = database.execute("select user_name, role from users where user_id = ?", @logged_in_user[:id]).first
+        @logged_in_user[:name] = result["user_name"]
+        @logged_in_user[:role] = result["role"]
+        database.results_as_hash = false
+        @logged_in_user[:friends] = database.execute("select user_name from users inner join friends on friended_id = user_id where friender_id = ?", @logged_in_user[:id])
+        @logged_in_user[:followers] = database.execute("select user_name from users inner join friends on friender_id = user_id where friended_id = ?", @logged_in_user[:id])
+        database.results_as_hash = true
         return nil
     end
 
@@ -109,12 +105,12 @@ module Model
     #
     # @return [String] If there is an error.
     # @return [NilClass] If method completes without errors.
-    def register_user(username, password, password_confirm, osu_id)
+    def register_user(username, password, password_confirm, osu_id, register_account)
         database = open_db()
         result = get_user(username)
         password_digest = result["password_digest"]
         user = result["user_id"]
-        if params[:register] == nil
+        if register_account == nil
             if user != nil
                 return "User #{username} is already being tracked."
             end
@@ -138,19 +134,19 @@ module Model
     
     # Adds a log of a user's data from the osu! api.
     #
-    # @param [Hash] params, parameters of the current http request.
+    # @param [String] username, The user which will be updated.
     # @param [Class] pt, Playtime class instance.
     #
     # @see Model#open_db
     #
     # @return [String] If there is an error.
     # @return [NilClass] If method completes without errors.
-    def update_user(params, pt)
+    def update_user(username, pt)
         database = open_db()
-        if database.execute("select * from users where user_name=?", params[:username]).first == nil
+        if database.execute("select * from users where user_name=?", username).first == nil
             return "user isn't registered to the database."
         else
-            pt.getdb(params[:username], "", database)
+            pt.getdb(username, "", database)
             return nil
         end
     end
@@ -188,11 +184,8 @@ module Model
 
     # Logs the last time specific actions took place, for example a failed login attempt or someone registering a user.
     #
-    # @param [Hash] session, Sinatra persistent data.
-    #
-    # @return [NilClass]
-    def log(session)
-        session[:log] = Time.now()
-        return nil
+    # @return [Time] Time object.
+    def log()
+        return Time.now()
     end
 end

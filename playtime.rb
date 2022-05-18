@@ -106,10 +106,15 @@ class Playtime
         end
         return output
     end
+
+    # Function for extrapolating data from the osu! playtime records.
+    #
+    # @param [Array] data, Array with data about a user.
+    #
+    # @return [Hash] output ska innehålla: skillnad i speltid mellan två datapunkter / skillnad i faktisk tid mellan två datapunkter.
+    # senaste veckans speltid.
+    # speltid per dag i snitt.
     def extrapolate(data)
-        # output ska innehålla: skillnad i speltid mellan två datapunkter / skillnad i faktisk tid mellan två datapunkter.
-        #                       senaste veckans speltid.
-        #                       speltid per dag i snitt.
         output = {"percent" => nil, "last_week" => nil, "average_day" => nil}
         return nil if data == nil 
         # skillnad i speltid mellan tidigaste och senaste datapunkten / skillnad i faktisk tid mellan tidigaste och senaste datapunkten.
@@ -142,6 +147,12 @@ class Playtime
         output["average_day"] = playtime_difference / ((DateTime.parse(date_time_last).to_time.to_i - DateTime.parse(date_time_first).to_time.to_i) / 86400.0) / 3600
         return output
     end
+    # Function which generates a png format image containing a graph of a user's playtime history.
+    #
+    # @param [String] user, Username of the account whose data is being graphed.
+    # @param [Array] data, Array with data about a user.
+    #
+    # @return [String] path to generated image.
     def graphdata(user, data)
         return "/img/missing_data.png" if data == nil 
         data = data[1..-1] if data.length%2 == 0 && data.length > 2
